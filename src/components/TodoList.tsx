@@ -44,9 +44,9 @@ const TodoList = () => {
       </thead>
       <tbody>
         {
-          tasks.map(task => (
-            <tr>
-              <td>{ task.name }</td>
+          tasks.map((task, index) => (  
+            <tr key={index}>{/* Agrego key (error de consola) */}
+              <td>{task.name}</td>
             </tr>
           ))
         }

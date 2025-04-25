@@ -1,3 +1,5 @@
+import { useState } from "react"
+
 const pieces = [
   {
       name: "C/F Cajon 1026",
@@ -155,16 +157,43 @@ const pieces = [
   }
 ]
 
+
+
 const PiecesList: React.FC = () => {
+  const [filter, setFilter] = useState('ALL') // estado para los filtros
+
+  const filteredPieces = filter === 'ALL'
+  ? pieces
+  : pieces.filter(piece => piece.tipo === filter)
+
+  const metrosCuadradosTotales = pieces.reduce((acumulado, pieza) => {
+    const ancho = Number(pieza.ancho)
+    const largo = Number(pieza.largo)
+  
+    if (isNaN(ancho) || isNaN(largo)) return acumulado
+  
+    const areaEnMm = ancho * largo
+    return acumulado + areaEnMm
+  }, 0) / 1_000_000 // convierte a m²
+
+
   return (
     <div>
       <h1>Despiece</h1>
       <div>
-        <p></p>
+        <p><strong>m² total:</strong> {metrosCuadradosTotales.toFixed(2)} m²</p>
       </div>
-      <select>
+
+      <select
+        value={filter}
+        onChange={e => setFilter(e.target.value)} // registra los cambios del selector
+      >
+        <option value="ALL">Todos</option>
         <option value="BASE">Base</option>
+        <option value="CAJON">Cajón</option>
+        <option value="PUERTA">Puerta</option>
       </select>
+
       <table>
         <thead>
           <tr>
@@ -177,9 +206,13 @@ const PiecesList: React.FC = () => {
         </thead>
         <tbody>
           {
-            pieces.map(piece => (
-              <tr>
-                <td style={{ padding: '5px' }}>{ piece.name }</td>
+            filteredPieces.map((piece, index) => ( // renderiza las piezas filtradas
+              <tr key={index}>
+                <td style={{ padding: '5px' }}>{piece.name}</td>
+                <td style={{ padding: '5px' }}>{piece.ancho}</td>
+                <td style={{ padding: '5px' }}>{piece.largo}</td>
+                <td style={{ padding: '5px' }}>{piece.material}</td>
+                <td style={{ padding: '5px' }}>{piece.tipo}</td>
               </tr>
             ))
           }
